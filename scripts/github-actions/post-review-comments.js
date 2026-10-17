@@ -305,7 +305,7 @@ async function runPostReviewComments({
     // A clean run is still a complete run: this path advances the checkpoint.
     // Warnings are not an input to that decision.
     const body = appendCheckpoint(
-      `${SUMMARY_MARKER}\n${icon} **OpenCodeReview**: ${message}${rangeNote}${warningBlock}`,
+      `${SUMMARY_MARKER}\n${icon} **OpenCodeReview**: ${message}${warningBlock}${rangeNote}`,
       result.manifest
     );
     const posted = await postSummary({ github, owner, repo, prNumber, body, sticky: stickySummary, preserveMarker, log });

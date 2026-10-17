@@ -712,17 +712,21 @@ async function testZeroFindingSummaryRendersWarnings() {
     );
   }
 
-  // A narrowed range note stays, with the warning list after it.
+  // A narrowed range note stays after the warning list, matching the
+  // with-comments summary (formatWarnings, then rangeNote).
   {
     const { github } = await run({
       result: { comments: [], message: completedMessage, warnings: completedWarnings },
       opts: ckRunOptions({ rangeMode: "checkpoint", rangeFrom: CK_OLD, rangeTo: CK_NEW }),
     });
     const rangeNote = `\n\n_Reviewed \`${CK_OLD.slice(0, 7)}..${CK_NEW.slice(0, 7)}\` only; earlier commits in this PR were reviewed in a previous run._`;
+    const warningBlock = formatWarnings(completedWarnings);
+    const body = postedBody(github);
     assert.strictEqual(
-      postedBody(github),
-      `${SUMMARY_MARKER}\n⚠️ **OpenCodeReview**: ${completedMessage}${rangeNote}${formatWarnings(completedWarnings)}`
+      body,
+      `${SUMMARY_MARKER}\n⚠️ **OpenCodeReview**: ${completedMessage}${warningBlock}${rangeNote}`
     );
+    assert.ok(body.indexOf(warningBlock) < body.indexOf(rangeNote), "warnings appear before the range note");
   }
 
   // No warnings: byte-identical to the historical clean summary.
